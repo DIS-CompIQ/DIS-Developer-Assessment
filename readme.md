@@ -1,7 +1,5 @@
 # Background
 
-This is a test 2
-
 This is a technical assessment meant to provide an opportunity for you
 to demonstrate your skills as it relates to the varied tasks here at
 CompIQ. You should spend no more than 2 hours on the assessment. If you
@@ -102,8 +100,43 @@ These are not at all required for submission, but are nice to see. If
 you run out time or have ideas, please describe them.
 
 -   [ ] UI of some sort
+
+        The UI of Swagger can be customized by creating an index.html or altering the following sample code.
+
+        https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/src/Swashbuckle.AspNetCore.SwaggerUI/index.html
+
+        Then the file needs to be to referenced  as and EmbeddedResource in .csproj
+
+
 -   [ ] API can generate Fugazi files from a selection of records
+
+        Create a filter with on HttpGet with the api. An example would look like the following
+
+            [HttpGet]
+            public IActionResult GetOwners([FromQuery] OwnerParameters ownerParameters)
+            {
+                if (!ownerParameters.ValidYearRange)
+                {
+                    return BadRequest("Max year of birth cannot be less than min year of birth");
+                }
+                var owners = _repository.Owner.GetOwners(ownerParameters);
+                var metadata = new
+                {
+                    owners.TotalCount,
+                    owners.PageSize,
+                    owners.CurrentPage,
+                    owners.TotalPages,
+                    owners.HasNext,
+                    owners.HasPrevious
+                };
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                _logger.LogInfo($"Returned {owners.TotalCount} owners from database.");
+                return Ok(owners);
+
+
 -   [ ] Large file handling
+
+    Configure a large file to be partitioned with MultipartFormDataStreamProvider. Each Partitioned part would be written to the database. 
 
 # Submission Guidelines
 
@@ -114,4 +147,40 @@ an email.
 
 # Running Locally
 
+To run this code locally, first download or clone this Git hub repo to a local environment.Ensure that the following packages have been installed. If you are building this project with vscode, use the following commands in the terminal.
+
+dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+dotnet add package Microsoft.Data.Sqlite
+dotnet add FugaziImporter.csproj package Swashbuckle.AspNetCore -v 6.2.3
+
+If you are building this project with vscode, use the following commands in the terminal. Be sure to change the directory(CD) to FugaziImporter. 
+
+dotnet build
+dotnet run
+
+When the application is running, access the swagger interface through the following link. Note the Localhost port will change per local environment. 
+
+https://localhost:<port>/swagger/index.html
+
+
 # Deploying to Production
+
+If nessesary, change database connections to a SQL server. Update 
+
+    builder.Services.AddDbContext<FiContext>(opt =>
+        opt.UseSqlServer(Configuration.GetConnectionString("ConnectionStrings")));
+
+Create the release package using the visual studio code terminal 
+
+    dotnet publish -c Release -o ./publish
+
+Publish content to host. Example of steps publishing to Azure App Service 
+
+    Right click the publish folder and select Deploy to Web App...
+    Select the subscription you want to create the Web App
+    Select Create New Web App
+    Enter a name for the Web App
+
+
+
+
