@@ -57,7 +57,7 @@ CREATE TABLE "FugaziImport" (
     "Address"   TEXT,
     "PhoneNumber"   INTEGER,
     "Injury"    TEXT,
-    "Treatment" INTEGER,
+    "Treatment" TEXT, -- changed from INTEGER to TEXT after confirming INTEGER was mistake
     "Amount"    NUMERIC,
     "Status"    TEXT,
     PRIMARY KEY("Id" AUTOINCREMENT)
@@ -78,19 +78,19 @@ may need, but you must maintain the structure of the FugaziImport table.
 
 ## API Endpoints
 
--   [ ] POST `/upload` Imports a Fugazi file received through a
+-   [x] POST `/upload` Imports a Fugazi file received through a
     multipart form upload
--   [ ] GET `/fugazi` Returns a JSON formatted list of all imported
+-   [x] GET `/fugazi` Returns a JSON formatted list of all imported
     Fugazi records in the database
--   [ ] GET `/fugazi/{id}` Returns a specific imported Fugazi record in
+-   [x] GET `/fugazi/{id}` Returns a specific imported Fugazi record in
     JSON format with the id of `{id}`. E.g. `/fugazi/1` should return
     the Fugazi record with an id of 1.
 
 ## Documentation
 
--   [ ] Running Locally Complete the section `Running Locally` below
+-   [x] Running Locally Complete the section `Running Locally` below
     describing how another developer would run your code
--   [ ] Deploying to Production Complete the section
+-   [x] Deploying to Production Complete the section
     `Deploying to Production` below describing how to deploy your code
     to production
 
@@ -100,8 +100,16 @@ These are not at all required for submission, but are nice to see. If
 you run out time or have ideas, please describe them.
 
 -   [ ] UI of some sort
--   [ ] API can generate Fugazi files from a selection of records
--   [ ] Large file handling
+    
+    A UI for this kind of tool should be part of some larger application. I would create simple a upload field and a search tool in a react app that would return a table of records. From the table I would implement checkboxes on each item and a download button that would request a `.fgz` from the selected records.
+
+-   [x] API can generate Fugazi files from a selection of records
+    
+    Using the endpoint `/download` will return a file including every record in the db. Similarly `download/{id}` will return a file with just the specified record
+
+-   [-] Large file handling
+
+    As written the API can handle large files, but performance leaves something to be desired. I would use the `MultipartFormDataStreamProvider` class with `StreamContent` to break up large files into smaller portions to be handled simultaneously with the `ReadAsMultipartAsync` method available on `StreamContent`. In tandem with a UI a large file could be uploaded in the background while the user continues with other tasks.
 
 # Submission Guidelines
 
@@ -112,4 +120,30 @@ an email.
 
 # Running Locally
 
+To run this project locally you will need to have the .NET CLI installed.
+
+Once installed just use the commands `dotnet build` and `dotnet run` from the project folder (in this case `DIS-Developer-Assessment/dotnet6/FugaziImporter`) to get the project up and running.
+
+The application should automatically open to a Swagger UI, but if it doesn't you can navigate to `localhost:7112/swagger` to preview and test all of the available HTTP commands for the API.
+
+If `localhost:7112/swagger` doesn't connect you may need to check your `launchSettings.json` in the `properties` folder to find the correct `localhost` port.
+
 # Deploying to Production
+
+For production you must change database from the in-memory to your desired SQL server by updating builder services with your SQL server's information. In `Program.cs` update:
+``` cs
+builder.services.AddDbContext<FugaziContext>(options => options.UseSqlServer(Configuration.GetConnectionString("YourConnectionStrings")));
+```
+Create your deployment folder by running `dotnet publish -c Release -o ./publish` from the project folder. The parameter `-c Release` will create a Release package in the folder given in `-o ./publish`.
+
+When `dotnet publish` is finished you can find the newly created `publish` folder in the project structure. With that folder you can upload and deploy the app to your service of choice.
+
+The easiest way to deploy is using the Azure App Service extension for VS Code:
+
+- Find the `publish` folder in the project folder
+- Right click the folder and select `Deploy to Web App...`
+- Select the Azure subscription you want to use for the deployment
+- Select `Create New Web App`
+- Enter a name for the web app, for example `FugaziImporter`
+
+Once the app is deployed you will be given the option to `Browse Website`, which will take you to the deployed version of the app.
