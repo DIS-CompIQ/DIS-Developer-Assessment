@@ -72,7 +72,7 @@ public class UploadController : ControllerBase {
 
                         Console.WriteLine(import);
                         // post to db
-                        await _context.FugaziImports.AddAsync(import);
+                        await _context.FugaziImport.AddAsync(import);
                         await _context.SaveChangesAsync();
                     }
                     // return some sort of success message

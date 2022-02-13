@@ -7,6 +7,6 @@ namespace FugaziImporter.Models
     {
         public FugaziContext(DbContextOptions<FugaziContext> options): base(options){}
 
-        public DbSet<FugaziImport> FugaziImports {get; set;}
+        public DbSet<FugaziImport> FugaziImport {get; set;}
     }
 }

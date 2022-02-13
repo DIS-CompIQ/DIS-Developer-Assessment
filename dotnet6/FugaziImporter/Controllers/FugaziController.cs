@@ -22,12 +22,12 @@ public class FugaziController : ControllerBase {
 
     [HttpGet]
     public async Task<ActionResult<List<FugaziImport>>> GetAllFgzImported(){
-        return await _context.FugaziImports.ToListAsync();
+        return await _context.FugaziImport.ToListAsync();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<FugaziImport>> GetFgzImportedById(int id){
-        var fugazi = await _context.FugaziImports.FindAsync(id);
+        var fugazi = await _context.FugaziImport.FindAsync(id);
 
         if (fugazi == null) {
             return NotFound();

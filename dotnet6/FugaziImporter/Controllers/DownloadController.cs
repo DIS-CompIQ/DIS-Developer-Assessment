@@ -18,7 +18,7 @@ namespace FugaziImporter.Controllers
 
         [HttpGet]
         public async Task<FileResult> DownloadAll(){
-            var allRecords = await _context.FugaziImports.ToListAsync();
+            var allRecords = await _context.FugaziImport.ToListAsync();
 
             MemoryStream stream = new MemoryStream();
             StreamWriter writer = new StreamWriter(stream);
@@ -63,7 +63,7 @@ namespace FugaziImporter.Controllers
         [HttpGet("{id}")]
         public async Task<FileResult> DownloadById(int id){
             // get information
-            var fugazi = await _context.FugaziImports.FindAsync(id);
+            var fugazi = await _context.FugaziImport.FindAsync(id);
 
             if (fugazi != null)
             { 
