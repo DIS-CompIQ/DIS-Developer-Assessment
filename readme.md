@@ -130,7 +130,7 @@ If `localhost:7112/swagger` doesn't connect you may need to check your `launchSe
 
 # Deploying to Production
 
-For production you must change database from the in-memory to your desired SQL server by updating builder services with your SQL server's information. In `Program.cs` update:
+For production you must change database from the `fugazi.db` to your desired SQL server by updating builder services with your SQL server's information. In `Program.cs` update:
 ``` cs
 builder.services.AddDbContext<FugaziContext>(options => options.UseSqlServer(Configuration.GetConnectionString("YourConnectionStrings")));
 ```
